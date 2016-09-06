@@ -1,0 +1,84 @@
+#! /usr/bin/perl -w 
+$sflag = 0;
+$dflag = 0;
+$flag1 = 0; 
+$flag2 = 0;
+$flag  = " ";
+if($ARGV[0] =~ /^-/){
+$flag = shift;
+}else{
+$flag = "sd12";
+}
+if($flag =~ /s/){
+	$sflag = 1;
+}
+if($flag =~ /d/){
+	$dflag = 1;
+	}
+if($flag =~ /1/){
+	$flag1 = 1;
+	}
+if($flag =~ /2/){
+	$flag2 = 1;
+	}
+$dir1 = shift;
+$dir2 = shift; 
+
+
+@pathFiles1 = `find $dir1 -maxdepth 1 -type f`;
+@pathFiles2 = `find $dir2 -maxdepth 1 -type f`;
+chop @pathFiles1;
+chop @pathFiles2;
+#@pathFiles1 = grep(-f ,@pathFiles1);
+#@pathFiles2 = grep(-f ,@pathFiles2);
+
+
+foreach $file1(@pathFiles1){
+		$filename1 = `basename $file1`;
+		chop $filename1;
+		$found  = 0;
+	foreach $file2(@pathFiles2){
+		$filename2 = `basename $file2`;
+		chop $filename2;
+
+		if ($filename1 eq $filename2){	
+			$found = 1;
+			if(`/usr/bin/diff -q $file1 $file2`){
+				if($sflag){
+				print "> $filename1 <\n";
+				}
+				#	push @slist,"< $filename1 >"
+				}else{
+					if($dflag){
+				print "< $filename1 >\n";
+			}
+				}
+	}
+
+}
+if($found == 0){
+	$f = `basename $file1`;
+	if($flag1){
+print "<<< $f";
+}
+}
+}
+
+
+
+foreach $file2(@pathFiles2){
+$found = 0;
+	$f2 = `basename $file2`;
+	foreach $file1(@pathFiles1){
+	$f1 = `basename $file1`;
+	if($f1 eq $f2){
+	$found =1;
+	}
+	}
+if($found == 0){
+	if($flag2){
+print ">>> $f2";
+	}
+}
+}
+

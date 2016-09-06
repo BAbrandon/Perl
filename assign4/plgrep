@@ -1,0 +1,58 @@
+#! /usr/bin/perl -w 
+$flag = 0;
+if($ARGV[0] =~ "-f"){
+	$flag = 1;
+	shift;
+}
+
+$expr = shift; 
+#print $expr;
+
+@files = `find @ARGV`;
+chop @files;
+@tfiles = grep(-f && -T,@files);
+@rfiles = grep(-f && !(-T),@files);
+
+foreach $file(@tfiles){
+	open(F,$file);
+	@lines = <F>;
+	#chop @lines;
+#	print @lines;
+	@flines = grep(/$expr/, @lines);
+#print @flines;
+	@out = grep(s/^/$file:/, @flines);
+
+	#print @out;
+
+	if($flag == 1 && @flines){
+		print $file," \n";
+	} else {
+		print @out;
+	}
+}
+
+
+
+
+
+
+foreach $f(@rfiles){
+
+@rlines = `strings $f`;
+chop @rlines;
+@flines2 = grep(/$expr/,@rlines);
+	@out = grep(s/^/$file:/, @flines);
+if($flag == 1 && @flines2){
+	
+	print "$f: \n";
+ }else{
+	print @out;
+ 
+ }
+
+}
+
+
+
+
+

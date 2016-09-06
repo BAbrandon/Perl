@@ -1,0 +1,26 @@
+#! /usr/bin/perl -w
+
+$dirfile = shift; 
+
+open(DF,$dirfile);
+@dirs =  <DF>;
+chop @dirs;
+
+@files = `find @dirs -print`;
+chop @files;
+foreach $file(@files){
+	next unless -f $file; 
+	if(@ARGV == 1){
+	open(OF, '>>', $ARGV[0]) or die;
+	$data = `sha256sum $file`;
+	($num, $loc) = split(" ",$data);
+	print OF "$loc $num","\n";
+	    
+     }
+     else{ 
+	$data = `sha256sum $file`;
+	($num, $loc) = split(" ",$data);
+	 print "$loc\t$num","\n";
+
+}
+}
